@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html>
+<head>
+    <title>지하철 이용객 예측</title>
+    <link rel="stylesheet" href="{% static 'css/map.css' %}">
+    <meta charset="UTF-8">
+</head>
+<body>
+    <div id="map"></div>
+    <script type="text/javascript">
+        var station = [{% for st in station %}
+        {"station_name": "{{st.station_name|escapejs}}",
+        "location_x": "{{st.location_x|escapejs}}",
+        "location_y": "{{st.location_y|escapejs}}",
+        },
+        {% endfor %}];
+        document.write(station[0]);
+
+        var map;
+
+        function initMap() {
+            map = new google.maps.Map(document.getElementById('map'), {
+            center: {lat: 37.566345, lng: 126.977893},
+            zoom: 14
+            });
+            var marker = new Array(station.length);
+            for (var i = 0; i < station.length; i++) {
+               var name = station[i].station_name;
+               var latLng = new google.maps.LatLng(station[i].location_x, station[i].location_y);
+               marker[i] = new google.maps.Marker({position: latLng, map: map, title: name });
+               var markerMaxWidth = 300;
+               //var contentString = '<h2>' + name + '</h2>' + '<div>현시각 하차 인원</div>';
+               var infoWindow = new google.maps.InfoWindow({//content: contentString,
+                        maxWidth: markerMaxWidth });
+               markerListener(marker[i], infoWindow)
+
+            }
+        }
+        function markerListener(marker, infoWindow) {
+               google.maps.event.addListener(marker, 'click', function() {
+                   infoWindow.open(map, marker);
+                   });
+        }
+    </script>
+
+    <script async defer
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAy0k4uApJixMS7kpSEQ338eg4_T_9ec2w&callback=initMap">
+    </script>
+    <div>
+    {% for st in station %}
+        {{st.station_name}}</br>
+        {{st.location_x}}</br>
+        {{st.location_y}}</br>
+    {% endfor %}
+    </div>
+</body>
+</html>
