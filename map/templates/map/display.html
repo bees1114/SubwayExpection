@@ -9,13 +9,13 @@
 <body>
     <div id="map"></div>
     <script type="text/javascript">
-        var station = [{% for st in station %}
-        {"station_name": "{{st.station_name|escapejs}}",
-        "location_x": "{{st.location_x|escapejs}}",
-        "location_y": "{{st.location_y|escapejs}}",
+        var station = [{% for ex_passenger in expectatedPassenger %}
+        {"station_name": "{{ex_passenger.station.station_name|escapejs}}",
+        "location_x": "{{ex_passenger.station.location_x|escapejs}}",
+        "location_y": "{{ex_passenger.station.location_y|escapejs}}",
+        "off_passenger": "{{ex_passenger.off_passenger|escapejs}}",
         },
         {% endfor %}];
-        document.write(station[0]);
 
         var map;
 
@@ -25,12 +25,12 @@
             zoom: 14
             });
             var marker = new Array(station.length);
-            for (var i = 0; i < station.length; i++) {
-               var name = station[i].station_name;
+            for (var i = 0; i < ex.length; i++) {
                var latLng = new google.maps.LatLng(station[i].location_x, station[i].location_y);
-               marker[i] = new google.maps.Marker({position: latLng, map: map, title: name });
+               marker[i] = new google.maps.Marker({position: latLng, map: map});
                var markerMaxWidth = 300;
-               //var contentString = '<h2>' + name + '</h2>' + '<div>현시각 하차 인원</div>';
+               var contentString = '<h2>' + station[i].station_name + '</h2>'
+                + '<div>현시각 하차 인원 :' + station[i].off_passenger + '</div>';
                var infoWindow = new google.maps.InfoWindow({//content: contentString,
                         maxWidth: markerMaxWidth });
                markerListener(marker[i], infoWindow)
