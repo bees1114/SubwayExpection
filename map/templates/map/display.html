@@ -33,14 +33,39 @@
             center: {lat: 37.566345, lng: 126.977893},
             zoom: 14
             });
+            for (var i = 0; i < station.length; i++) {
+               var latLng = new google.maps.LatLng(station[i].location_x, station[i].location_y);
+               if(station[i]['off_passenger_1'] > 8000) {
+                   var icon = 'http://maps.google.com/mapfiles/ms/icons/red-dot.png';
+               } else if(station[i]['off_passenger_1'] > 5000) {
+                   var icon = 'http://maps.google.com/mapfiles/ms/icons/purple-dot.png';
+               }
+                else if(station[i]['off_passenger_1'] > 2500) {
+                   var icon = 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png';
+               }
+               else if(station[i]['off_passenger_1'] > 1000) {
+                   var icon = 'http://maps.google.com/mapfiles/ms/icons/yellow-dot.png';
+               } else {
+                   var icon = 'http://maps.google.com/mapfiles/ms/icons/green-dot.png';
+               }
+               marker[i] = new google.maps.Marker({position: latLng, map: map, icon:icon})
 
+               var markerMaxWidth = 300;
+               var time = {{time.hour}} + 1;
+               var contentString = '<h2>' + station[i].station_name + '</h2>'
+                + '<div>' + time + '시 하차 예상 인원 :' + station[i]['off_passenger_1'] + '</div>';
+
+               var infoWindow = new google.maps.InfoWindow({content: contentString,
+                        maxWidth: markerMaxWidth });
+               markerListener(marker[i], infoWindow)
+            }
         }
 
+        var marker = new Array(station.length);
 
         function expected(off_passenger_time) {
-
-            var marker = new Array(station.length);
-            for (var i = 0; i < station.length; i++) {
+             deleteMarkers();
+             for (var i = 0; i < station.length; i++) {
                var latLng = new google.maps.LatLng(station[i].location_x, station[i].location_y);
                if(station[i][off_passenger_time] > 8000) {
                    var icon = 'http://maps.google.com/mapfiles/ms/icons/red-dot.png';
@@ -77,8 +102,16 @@
         function markerListener(marker, infoWindow) {
                google.maps.event.addListener(marker, 'click', function() {
                    infoWindow.open(map, marker);
-                   });
+               });
         }
+
+        function deleteMarkers() {
+            for (var i = 0; i < marker.length; i++) {
+                marker[i].setMap(null);
+            }
+            marker = new Array(station.length);
+        }
+
     </script>
 
     <script async defer
