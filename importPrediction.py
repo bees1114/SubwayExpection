@@ -9,7 +9,6 @@ from map.models import ExpectatedPassenger
 from map.models import Station
 FILE_DIR = 'D:\git\SubwayExpection\Data'
 
-
 station_list = []
 with open(FILE_DIR + '\output_station.txt') as stations_file:
     input_station = stations_file.readlines()
@@ -36,6 +35,8 @@ with open('test_input_on_web.csv', "r",  encoding='utf-8') as file:
                 station=Station.objects.get(station_name=station),
                 date=datetime(year=2017, month=9, day=1, hour=hour, minute=30),
                 on_passenger=-1,
-                off_passenger=row[i],
+                off_passenger_1=row[i],
+                off_passenger_2=row[i + 110],
+                off_passenger_3=row[i + 220],
             )
     print(station_list)

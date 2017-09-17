@@ -30,7 +30,9 @@ class ExpectatedPassenger(models.Model):
     station = models.ForeignKey(Station)
     date = models.DateTimeField()
     on_passenger = models.IntegerField()
-    off_passenger = models.IntegerField()
+    off_passenger_1 = models.IntegerField()
+    off_passenger_2 = models.IntegerField()
+    off_passenger_3 = models.IntegerField()
 
     def get_date(self):
         return self.date
@@ -39,4 +41,4 @@ class ExpectatedPassenger(models.Model):
         return self.on_passenger
 
     def get_off_passenger(self):
-        return self.off_passenger
+        return self.off_passenger_1

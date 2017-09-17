@@ -10,15 +10,9 @@ def display(request):
     datetime_object = datetime(2017, 9, 1, 8, 30)
     pytz.timezone("Asia/Seoul").localize(datetime_object)
     '''
-    time = 12
-    start_date = datetime(2017, 9, 1, time, 30)
-    end_date = datetime(2017, 9, 1, time+2, 30)
-    expectedPassenger = ExpectatedPassenger.objects.filter(date__range=(start_date, end_date))
-    expectatedPassenger_1 = ExpectatedPassenger.objects.filter(date=start_date)
-    expectatedPassenger_2 = ExpectatedPassenger.objects.filter(date=datetime(2017, 9, 1, time + 1, 30))
-    expectatedPassenger_3 = ExpectatedPassenger.objects.filter(date=datetime(2017, 9, 1, time + 2, 30))
+    start_date = datetime(2017, 9, 1, 12, 30)
+    date_string = str(start_date.year) + "년 " + str(start_date.month) + "월 " + \
+                  str(start_date.day) + "일 " + str(start_date.hour) + "시 기준"
+    expectedPassenger = ExpectatedPassenger.objects.filter(date=start_date)
 
-    return render(request, 'map/display.html', {'expectedPassenger': expectedPassenger,
-                                                'expectatedPassenger_1': expectatedPassenger_1,
-                                                'expectatedPassenger_2': expectatedPassenger_2,
-                                                'expectatedPassenger_3': expectatedPassenger_3})
+    return render(request, 'map/display.html', {'time': start_date, 'expectedPassenger': expectedPassenger})
