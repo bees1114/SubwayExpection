@@ -13,7 +13,7 @@ class Station(models.Model):
 
 class RealPassenger(models.Model):
     station = models.ForeignKey(Station)
-    date = models.DateField()
+    date = models.DateTimeField()
     on_passenger = models.IntegerField()
     off_passenger = models.IntegerField()
 

@@ -7,13 +7,21 @@
     <meta charset="UTF-8">
 </head>
 <body>
+    <div id="description">지하철 이용객 예측 시스템</div>
+    <button>1시간 뒤</button>
+    <button>2시간 뒤</button>
+    <button>3시간 뒤</button>
     <div id="map"></div>
     <script type="text/javascript">
-        var station = [{% for ex_passenger in expectatedPassenger %}
+
+        var station = [{% for ex_passenger in expectedPassenger %}
         {"station_name": "{{ex_passenger.station.station_name|escapejs}}",
         "location_x": "{{ex_passenger.station.location_x|escapejs}}",
         "location_y": "{{ex_passenger.station.location_y|escapejs}}",
-        "off_passenger": "{{ex_passenger.off_passenger|escapejs}}",
+        "off_passenger_1": "{{ex_passenger.off_passenger|escapejs}}",
+        "off_passenger_2": "{{ex_passenger.off_passenger|escapejs}}",
+        "off_passenger_3": "{{ex_passenger.off_passenger|escapejs}}",
+
         },
         {% endfor %}];
 
@@ -25,13 +33,27 @@
             zoom: 14
             });
             var marker = new Array(station.length);
-            for (var i = 0; i < ex.length; i++) {
+            for (var i = 0; i < station.length; i++) {
                var latLng = new google.maps.LatLng(station[i].location_x, station[i].location_y);
-               marker[i] = new google.maps.Marker({position: latLng, map: map});
+               if(station[i].off_passenger > 8000) {
+                   var icon = 'http://maps.google.com/mapfiles/ms/icons/red-dot.png';
+               } else if(station[i].off_passenger > 5000) {
+                   var icon = 'http://maps.google.com/mapfiles/ms/icons/purple-dot.png';
+               }
+                else if(station[i].off_passenger > 2500) {
+                   var icon = 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png';
+               }
+               else if(station[i].off_passenger > 1000) {
+                   var icon = 'http://maps.google.com/mapfiles/ms/icons/yellow-dot.png';
+               } else {
+                   var icon = 'http://maps.google.com/mapfiles/ms/icons/green-dot.png';
+               }
+               marker[i] = new google.maps.Marker({position: latLng, map: map, icon:icon})
+
                var markerMaxWidth = 300;
                var contentString = '<h2>' + station[i].station_name + '</h2>'
-                + '<div>현시각 하차 인원 :' + station[i].off_passenger + '</div>';
-               var infoWindow = new google.maps.InfoWindow({//content: contentString,
+                + '<div>1시간 뒤 하차 예상 인원 :' + station[i].off_passenger + '</div>';
+               var infoWindow = new google.maps.InfoWindow({content: contentString,
                         maxWidth: markerMaxWidth });
                markerListener(marker[i], infoWindow)
 
@@ -46,13 +68,10 @@
 
     <script async defer
             src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAy0k4uApJixMS7kpSEQ338eg4_T_9ec2w&callback=initMap">
+
     </script>
+
     <div>
-    {% for st in station %}
-        {{st.station_name}}</br>
-        {{st.location_x}}</br>
-        {{st.location_y}}</br>
-    {% endfor %}
     </div>
 </body>
 </html>
