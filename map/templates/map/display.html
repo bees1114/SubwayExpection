@@ -5,16 +5,11 @@
     <title>지하철 이용객 예측</title>
     <link rel="stylesheet" type="text/css" href="{% static 'css/map.css' %}">
     <meta charset="UTF-8">
-</head>
-<body>
-    <div id="description">
-        <h2>지하철 이용객 예측 시스템 {{time.year}}년 {{time.month}}월 {{time.day}}일 {{time.hour}}시 기준</h2>
-            <button onclick="expected('off_passenger_1')">1시간 뒤</button>
-            <button onclick="expected('off_passenger_2')">2시간 뒤</button>
-            <button onclick="expected('off_passenger_3')">3시간 뒤</button>
-    </div>
-    <div id="map"></div>
+
     <script type="text/javascript">
+        /////////////////////////////////////////////////////////////
+        //get 'number of get off passenger' and 'station information' from django model
+        var a = "{{searched_expectedPassenger.station.station_name}}";
 
         var station = [{% for ex_passenger in expectedPassenger %}
         {"station_name": "{{ex_passenger.station.station_name|escapejs}}",
@@ -25,14 +20,26 @@
         "off_passenger_3": "{{ex_passenger.off_passenger_3|escapejs}}",
         },
         {% endfor %}];
-
         var map;
+        /////////////////////////////////////////////////////////////
+        //initializer google map
 
         function initMap() {
-            map = new google.maps.Map(document.getElementById('map'), {
-            center: {lat: 37.566345, lng: 126.977893},
-            zoom: 14
-            });
+             var search_or_not = "{{searched_expectedPassenger.station.station_name}}";
+
+             if(search_or_not) {
+                 var latLng = new google.maps.LatLng("{{searched_expectedPassenger.station.location_x}}", "{{searched_expectedPassenger.station.location_y}}");
+                 map =  new google.maps.Map(document.getElementById('map'), {
+                 center: {lat: Number("{{searched_expectedPassenger.station.location_x}}"), lng: Number("{{searched_expectedPassenger.station.location_y}}")},
+                 zoom: 14
+                 });
+             } else {
+                map = new google.maps.Map(document.getElementById('map'), {
+                center: {lat: 37.566345, lng: 126.977893},
+                zoom: 14
+                });
+             }
+
             for (var i = 0; i < station.length; i++) {
                var latLng = new google.maps.LatLng(station[i].location_x, station[i].location_y);
                if(station[i]['off_passenger_1'] > 8000) {
@@ -61,8 +68,9 @@
             }
         }
 
+        /////////////////////////////////////////////////////////////
+        //drawing maker
         var marker = new Array(station.length);
-
         function expected(off_passenger_time) {
              deleteMarkers();
              for (var i = 0; i < station.length; i++) {
@@ -99,12 +107,16 @@
             }
         }
 
+        /////////////////////////////////////////////////////////////
+        //marker listener
         function markerListener(marker, infoWindow) {
                google.maps.event.addListener(marker, 'click', function() {
                    infoWindow.open(map, marker);
                });
         }
 
+        /////////////////////////////////////////////////////////////
+        //marker deletion function
         function deleteMarkers() {
             for (var i = 0; i < marker.length; i++) {
                 marker[i].setMap(null);
@@ -112,11 +124,32 @@
             marker = new Array(station.length);
         }
 
+        /////////////////////////////////////////////////////////////
+        //map moving
+
     </script>
 
     <script async defer
             src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAy0k4uApJixMS7kpSEQ338eg4_T_9ec2w&callback=initMap">
     </script>
+
+</head>
+<body>
+    <div id="description">
+        <a id="title_in_body" href="/" name="title_in_body">지하철 이용객 예측 시스템 {{time.year}}년 {{time.month}}월 {{time.day}}일 {{time.hour}}시 기준</a>
+    </div>
+        {{searched_expectedPassenger.station.station_name}}
+        {{searched_expectedPassenger.off_passenger_1}}
+    <div id="search_function">
+            <button onclick="expected('off_passenger_1')">1시간 뒤</button>
+            <button onclick="expected('off_passenger_2')">2시간 뒤</button>
+            <button onclick="expected('off_passenger_3')">3시간 뒤</button>
+            <form method="get" id=search_station_form> 역명 :
+                <input type="text" name="station_name" />
+​​​​​​​         <button type="submit">검색</button>
+            </form>
+    </div>
+    <div id="map"></div>
 
 </body>
 </html>
