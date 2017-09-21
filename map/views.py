@@ -5,7 +5,7 @@ from django.utils import timezone
 import pytz
 
 def display(request):
-    start_date = datetime(2017, 9, 1, 12, 30)
+    start_date = datetime(2017, 9, 1, 17, 30)
     date_string = str(start_date.year) + "년 " + str(start_date.month) + "월 " + \
                   str(start_date.day) + "일 " + str(start_date.hour) + "시 기준"
 

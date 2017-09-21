@@ -4,20 +4,28 @@
 <head>
     <title>지하철 이용객 예측</title>
     <link rel="stylesheet" type="text/css" href="{% static 'css/map.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/semantic/semantic.css' %}">
+    <script
+        src="https://code.jquery.com/jquery-3.1.1.min.js"
+        integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+        crossorigin="anonymous"></script>
+    <script src="{%static 'css/semantic/semantic.js' %}"></script>
     <meta charset="UTF-8">
-
     <script type="text/javascript">
         /////////////////////////////////////////////////////////////
         //get 'number of get off passenger' and 'station information' from django model
+
         var a = "{{searched_expectedPassenger.station.station_name}}";
 
         var station = [{% for ex_passenger in expectedPassenger %}
-        {"station_name": "{{ex_passenger.station.station_name|escapejs}}",
-        "location_x": "{{ex_passenger.station.location_x|escapejs}}",
-        "location_y": "{{ex_passenger.station.location_y|escapejs}}",
-        "off_passenger_1": "{{ex_passenger.off_passenger_1|escapejs}}",
-        "off_passenger_2": "{{ex_passenger.off_passenger_2|escapejs}}",
-        "off_passenger_3": "{{ex_passenger.off_passenger_3|escapejs}}",
+        {
+        title: '{{ex_passenger.station.station_name|escapejs}}',
+        station_name: "{{ex_passenger.station.station_name|escapejs}}",
+        location_x: "{{ex_passenger.station.location_x|escapejs}}",
+        location_y: "{{ex_passenger.station.location_y|escapejs}}",
+        off_passenger_1: "{{ex_passenger.off_passenger_1|escapejs}}",
+        off_passenger_2: "{{ex_passenger.off_passenger_2|escapejs}}",
+        off_passenger_3: "{{ex_passenger.off_passenger_3|escapejs}}",
         },
         {% endfor %}];
         var map;
@@ -59,9 +67,18 @@
 
                var markerMaxWidth = 300;
                var time = {{time.hour}} + 1;
-               var contentString = '<h2>' + station[i].station_name + '</h2>'
-                + '<div>' + time + '시 하차 예상 인원 :' + station[i]['off_passenger_1'] + '</div>';
-
+               var contentString =
+               '<div class="marker_info">'
+               + '<div class="ui tiny statistic">'
+               + '<div class="value"><i class="plane icon"></i>'
+               + station[i]['off_passenger_1']
+               + '</div>'
+               + '<div class="label">'
+               +  time + '시' + ' '
+               + station[i].station_name
+               + '</div>'
+               + '</div>'
+               + '</div>';
                var infoWindow = new google.maps.InfoWindow({content: contentString,
                         maxWidth: markerMaxWidth });
                markerListener(marker[i], infoWindow)
@@ -98,9 +115,18 @@
                } else {
                     var time = {{time.hour}} + 3;
                }
-               var contentString = '<h2>' + station[i].station_name + '</h2>'
-                + '<div>' + time + '시 하차 예상 인원 :' + station[i][off_passenger_time] + '</div>';
-
+               var contentString =
+               '<div class="marker_info">'
+               + '<div class="ui tiny statistic">'
+               + '<div class="value"><i class="plane icon"></i>'
+               + station[i]['off_passenger_1']
+               + '</div>'
+               + '<div class="label">'
+               + time + '시' + ' '
+               + station[i].station_name
+               + '</div>'
+               + '</div>'
+               + '</div>';
                var infoWindow = new google.maps.InfoWindow({content: contentString,
                         maxWidth: markerMaxWidth });
                markerListener(marker[i], infoWindow)
@@ -124,9 +150,6 @@
             marker = new Array(station.length);
         }
 
-        /////////////////////////////////////////////////////////////
-        //map moving
-
     </script>
 
     <script async defer
@@ -135,21 +158,37 @@
 
 </head>
 <body>
-    <div id="description">
-        <a id="title_in_body" href="/" name="title_in_body">지하철 이용객 예측 시스템 {{time.year}}년 {{time.month}}월 {{time.day}}일 {{time.hour}}시 기준</a>
-    </div>
-        {{searched_expectedPassenger.station.station_name}}
-        {{searched_expectedPassenger.off_passenger_1}}
-    <div id="search_function">
-            <button onclick="expected('off_passenger_1')">1시간 뒤</button>
-            <button onclick="expected('off_passenger_2')">2시간 뒤</button>
-            <button onclick="expected('off_passenger_3')">3시간 뒤</button>
-            <form method="get" id=search_station_form> 역명 :
-                <input type="text" name="station_name" />
-​​​​​​​         <button type="submit">검색</button>
-            </form>
-    </div>
-    <div id="map"></div>
+    <header class="ui huge inverted pointing attached menu">
+        <section class="left item">
+            <i class="large bordered inverted teal subway icon"></i>
+            <a href="/">지하철 이용객 예측 시스템 </br>{{time.year}}년 {{time.month}}월 {{time.day}}일 {{time.hour}}시 기준</a></h5>
+        </section>
+        <section class="center item">
+            <div id="big ui three buttons">
+                <button class="ui inverted olive big button" onclick="expected('off_passenger_1')">{{time.hour|add:1}}시 예측</button>
+                <button class="ui inverted purple big button" onclick="expected('off_passenger_2')">{{time.hour|add:2}}시 예측</button>
+                <button class="ui inverted brown big button" onclick="expected('off_passenger_3')">{{time.hour|add:3}}시 예측</button>
+            </div>
 
+        </section>
+        <section class="item">
+            <form method="get" action="/" class="ui search">
+                <div class="ui icon input">
+                    <input class="prompt" name="station_name" type="text" placeholder="Search stations...">
+                    <i class="search icon"></i>
+                </div>
+                <div class="results"></div>
+            </form>
+            <script>
+                $('.ui.search').search({source: station});
+            </script>
+        </section>
+    </header>
+    <div id="map_container">
+        <div id="map"></div>
+    </div>
+    <footer class="ui inverted pointing attached menu">
+
+    </footer>
 </body>
 </html>
