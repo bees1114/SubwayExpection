@@ -39,43 +39,74 @@
                  var latLng = new google.maps.LatLng("{{searched_expectedPassenger.station.location_x}}", "{{searched_expectedPassenger.station.location_y}}");
                  map =  new google.maps.Map(document.getElementById('map'), {
                  center: {lat: Number("{{searched_expectedPassenger.station.location_x}}"), lng: Number("{{searched_expectedPassenger.station.location_y}}")},
-                 zoom: 14
+                 zoom: 14,
+
                  });
              } else {
                 map = new google.maps.Map(document.getElementById('map'), {
                 center: {lat: 37.566345, lng: 126.977893},
-                zoom: 14
+                zoom: 14,
+
                 });
              }
 
             for (var i = 0; i < station.length; i++) {
                var latLng = new google.maps.LatLng(station[i].location_x, station[i].location_y);
                if(station[i]['off_passenger_1'] > 8000) {
-                   var icon = 'http://maps.google.com/mapfiles/ms/icons/red-dot.png';
+                   var url = "{% static "image/speech-marker-red.png" %}";
+                   var color = "#FF0000";
                } else if(station[i]['off_passenger_1'] > 5000) {
-                   var icon = 'http://maps.google.com/mapfiles/ms/icons/purple-dot.png';
+                   var url = "{% static "image/speech-marker-purple.png" %}";
+                   var color = "#CC0066";
                }
-                else if(station[i]['off_passenger_1'] > 2500) {
-                   var icon = 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png';
+                else if(station[i]['off_passenger_1'] > 3000) {
+                   var url = "{% static "image/speech-marker-blue.png" %}";
+                   var color = "#0000FF";
                }
-               else if(station[i]['off_passenger_1'] > 1000) {
-                   var icon = 'http://maps.google.com/mapfiles/ms/icons/yellow-dot.png';
+                else if(station[i]['off_passenger_1'] > 1500) {
+                   var url = "{% static "image/speech-marker-teal.png" %}";
+                   var color = "#006666";
+               }
+               else if(station[i]['off_passenger_1'] > 750) {
+                   var url = "{% static "image/speech-marker-orange.png" %}";
+                   var color = "#663300";
                } else {
-                   var icon = 'http://maps.google.com/mapfiles/ms/icons/green-dot.png';
+                   var url = "{% static "image/speech-marker-green.png" %}";
+                   var color = '#003333';
                }
-               marker[i] = new google.maps.Marker({position: latLng, map: map, icon:icon})
+               var markerIcon = {
+                url: url,
+                scaledSize: new google.maps.Size(60, 60),
+                origin: new google.maps.Point(0, 0),
+                labelOrigin:  new google.maps.Point(30,20),
+               }
+               var markerLabel = {
+                text: station[i]['off_passenger_1'],
+                color:  color,
+                fontSize: "18px",
+                fontWeight: "bold"
+               }
+               marker[i] = new google.maps.Marker({position: latLng, map: map, label: markerLabel, icon:markerIcon})
 
                var markerMaxWidth = 300;
                var time = {{time.hour}} + 1;
                var contentString =
                '<div class="marker_info">'
                + '<div class="ui tiny statistic">'
-               + '<div class="value"><i class="plane icon"></i>'
+               + '<div class="value"><i class="subway icon"> </i>'
+               + station[i].station_name
+               + '</div>'
+               + '<div class="label">'
+               + time + '시' + ' '
                + station[i]['off_passenger_1']
                + '</div>'
                + '<div class="label">'
-               +  time + '시' + ' '
-               + station[i].station_name
+               + {{time.hour|add:2}} + '시' + ' '
+               + station[i]['off_passenger_2']
+               + '</div>'
+               + '<div class="label">'
+               + {{time.hour|add:3}} + '시' + ' '
+               + station[i]['off_passenger_3']
                + '</div>'
                + '</div>'
                + '</div>';
@@ -93,19 +124,39 @@
              for (var i = 0; i < station.length; i++) {
                var latLng = new google.maps.LatLng(station[i].location_x, station[i].location_y);
                if(station[i][off_passenger_time] > 8000) {
-                   var icon = 'http://maps.google.com/mapfiles/ms/icons/red-dot.png';
+                   var url = "{% static "image/speech-marker-red.png" %}";
+                   var color = "#FF0000";
                } else if(station[i][off_passenger_time] > 5000) {
-                   var icon = 'http://maps.google.com/mapfiles/ms/icons/purple-dot.png';
+                   var url = "{% static "image/speech-marker-purple.png" %}";
+                   var color = "#CC0066";
                }
-                else if(station[i][off_passenger_time] > 2500) {
-                   var icon = 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png';
+                else if(station[i][off_passenger_time] > 3000) {
+                   var url = "{% static "image/speech-marker-blue.png" %}";
+                   var color = "#0000FF";
                }
-               else if(station[i][off_passenger_time] > 1000) {
-                   var icon = 'http://maps.google.com/mapfiles/ms/icons/yellow-dot.png';
+                else if(station[i][off_passenger_time] > 1500) {
+                   var url = "{% static "image/speech-marker-teal.png" %}";
+                   var color = "#006666";
+               }
+               else if(station[i][off_passenger_time] > 750) {
+                   var url = "{% static "image/speech-marker-orange.png" %}";
+                   var color = "#663300";
                } else {
-                   var icon = 'http://maps.google.com/mapfiles/ms/icons/green-dot.png';
+                   var url = "{% static "image/speech-marker-green.png" %}";
+                   var color = '#003333';
                }
-               marker[i] = new google.maps.Marker({position: latLng, map: map, icon:icon})
+               var markerIcon = {
+                url: url,
+                scaledSize: new google.maps.Size(60, 60),
+                origin: new google.maps.Point(0, 0),
+                labelOrigin:  new google.maps.Point(30,20),
+               }
+               var markerLabel = {
+                text: station[i][off_passenger_time],
+                color:  color,
+                fontSize: "18px",
+                fontWeight: "bold"
+               }
 
                var markerMaxWidth = 300;
                if(off_passenger_time == 'off_passenger_1') {
@@ -115,15 +166,23 @@
                } else {
                     var time = {{time.hour}} + 3;
                }
-               var contentString =
+              var contentString =
                '<div class="marker_info">'
                + '<div class="ui tiny statistic">'
-               + '<div class="value"><i class="plane icon"></i>'
-               + station[i]['off_passenger_1']
+               + '<div class="value"><i class="subway icon"> </i>'
+               + station[i].station_name
                + '</div>'
                + '<div class="label">'
                + time + '시' + ' '
-               + station[i].station_name
+               + station[i]['off_passenger_1']
+               + '</div>'
+               + '<div class="label">'
+               + {{time.hour|add:2}} + '시' + ' '
+               + station[i]['off_passenger_2']
+               + '</div>'
+               + '<div class="label">'
+               + {{time.hour|add:3}} + '시' + ' '
+               + station[i]['off_passenger_3']
                + '</div>'
                + '</div>'
                + '</div>';

@@ -19,3 +19,7 @@ footer {
 
 .marker_info {
 }
+
+img[src="{% static "image/validating-ticket.svg" %}"] {
+ background-color:red;
+}
